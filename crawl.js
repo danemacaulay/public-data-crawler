@@ -1,18 +1,22 @@
 var json2csv = require('json2csv');
 var utils = require('utils');
-main(json2csv);
+var fs = require('fs');
+var utils = require('utils');
+var parcelData = fs.read('parcels.json');
+parcelData = JSON.parse(parcelData);
 
-function main(json2csv, utils){
+main(utils, parcelData);
+
+function main(utils, parcelData){
   var ctrl = this;
   var casper;
-  ctrl.json2csv = json2csv;
   init();
 
   function init(){
     casper = require('casper').create({
       clientScripts:  [
-      'bower_components/jquery/src/jquery.js',
-      'bower_components/table-to-json/src/jquery.tabletojson.js',
+        'bower_components/jquery/src/jquery.js',
+        'bower_components/table-to-json/src/jquery.tabletojson.js',
       ],
       pageSettings: {
         loadImages:  false,
@@ -24,10 +28,11 @@ function main(json2csv, utils){
 
     ctrl.url = 'http://www.placer.ca.gov/Departments/Assessor/Assessment%20Inquiry.aspx';
     ctrl.json = [];
+    // ctrl.plots = parcelData;
     ctrl.plots = [
       '093380008000',
     ];
-    processData();
+    // processData();
   }
 
   function processData(){
@@ -36,12 +41,12 @@ function main(json2csv, utils){
       processPlot(plot);
     });
     casper.run(function() {
-      // var that = this;
-      // ctrl.json2csv(ctrl.json, function(err, csv) {
-      //   fs.writeFile('file.csv', csv, function(err) {
-      //     that.echo('file saved');
-      //   });
-      // });
+      var that = this;
+      ctrl.json2csv(ctrl.json, function(err, csv) {
+        fs.writeFile('file.csv', csv, function(err) {
+          that.echo('file saved');
+        });
+      });
       this.echo('length.... ' + ctrl.json.length);
       this.echo('string.... ' + JSON.stringify(ctrl.json));
       this.exit();
@@ -67,7 +72,8 @@ function main(json2csv, utils){
     });
     casper.then(function() {
       this.debugPage();
-      var tableData = this.evaluate(function() {
+      var tableData = [];
+      tableData = this.evaluate(function() {
         utils.dump($('table'));
         return $('table').tableToJSON();
       });
