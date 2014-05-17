@@ -1,9 +1,8 @@
 var utils = require('utils');
 var fs = require('fs');
-var utils = require('utils');
 var parcelData = fs.read('parcels.json');
 parcelData = JSON.parse(parcelData);
-
+utils.dump("Processing " + parcelData.length + " parcels");
 main(utils, parcelData, fs);
 
 function main(utils, parcelData, fs){
@@ -27,8 +26,8 @@ function main(utils, parcelData, fs){
 
     ctrl.url = 'http://www.placer.ca.gov/Departments/Assessor/Assessment%20Inquiry.aspx';
     ctrl.json = [];
-    // ctrl.plots = parcelData;
-    ctrl.plots = ["093380008000","038330018000","112290015000","043015041000","468010047000","054200007000","111100026000","458030006000","043015042000","054031075000","093380012000"];
+    ctrl.plots = parcelData;
+    // ctrl.plots = ["093380008000","038330018000","112290015000","043015041000","468010047000","054200007000","111100026000","458030006000","043015042000","054031075000","093380012000"];
     processData();
   }
 
@@ -50,17 +49,20 @@ function main(utils, parcelData, fs){
         window.location = document.querySelector('iframe').src;
       });
     });
+    casper.wait(1000);
     casper.then(function() {
       this.evaluate(function(plot) {
         document.querySelector('input[name="idfeeparcel"]').value = plot;
         SubmitForm();
       }, plot);
     });
+    casper.wait(1000);
     casper.then(function() {
       this.evaluate(function() {
         window.location = document.querySelector('tr.data > td a').href;
       });
     });
+    casper.wait(1000);
     casper.then(function() {
       var tableData = this.evaluate(function() {
         var data = {};
