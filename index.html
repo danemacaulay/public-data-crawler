@@ -1,0 +1,57 @@
+
+<b></b>
+<br/>
+<?xml version="1.0" encoding="utf-8"?>
+  		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" >
+	  <html><head>
+	  <script type="text/javascript" src="/bower_components/jquery/index.js"></script>
+	  <script type="text/javascript" src="/bower_components/table-to-json/lib/jquery.tabletojson.js"></script>
+	  <script type="text/javascript">
+	  $(function() {
+		  var data = {};
+		  var owners = [];
+	  	var key, value;
+    	var found = false;
+		  $('table tr').each(function(){
+		    key = $(this).find('td').first().text();
+		    value = $(this).find('td').filter('.c2').text();
+		    data[key] = value;
+		    if($(this).find('.title').text() == 'Ownership'){
+		    	found = true;
+		    }else if($(this).find('.title').text() == 'Building Description(s)'){
+		    	found = false;
+		    }else if(found){
+		    	owners.push($(this).text().replace(/\s+/g, ' '));
+		    }
+		  })
+      data['Ownership'] = owners;
+
+		  console.log(data['Ownership']);
+	  })
+	  </script>
+	  <title>Assessor Inquiry</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" href="../Placer/WebInquiry/CSS/stylesheet.css" type="text/css" /><link rel="stylesheet" href="Placer/WebInquiry/CSS/menus-simple.css" type="text/css" /><script type="text/javascript" language="javascript"></script><script type="text/javascript" language="javascript" src="../Placer/WebInquiry/jscripts/ua.js"></script><script type="text/javascript" language="javascript" src="../Placer/WebInquiry/jscripts/xbDebug.js"></script><script type="text/javascript" language="javascript" src="../Placer/WebInquiry/jscripts/xbDOM.js"></script><script type="text/javascript" language="javascript" src="../Placer/WebInquiry/jscripts/xbStyle.js"></script><script type="text/javascript" language="javascript" src="../Placer/WebInquiry/jscripts/mbsMenuTree.js"></script><script type="text/javascript" language="javascript" src="../Placer/WebInquiry/jscripts/common.js"></script><script language="JavaScript" src="../_ScriptLibrary/RS.HTM"></script><script language="javascript"></script><script type="text/javascript" language="javascript" src="Placer/WebInquiry/jscripts/webinquiry.js"></script><style type="text/css">
+					td{width: 30%; color: #336699; font-weight: bold}
+					td.c2{text-align: right; color: #336699;}
+				</style></head><body onload=""><script language="javascript">
+				function PrintMe()
+				{
+					document.getElementById('s1').style.visibility = "visible";
+					document.getElementById('d1').style.visibility = "hidden";
+					document.getElementById('d2').style.visibility = "hidden";
+					document.getElementById('d3').style.visibility = "hidden";
+					document.getElementById('d4').style.visibility = "hidden";
+					document.getElementById('d5').style.visibility = "hidden";
+					window.print();
+					document.getElementById('s1').style.visibility = "hidden";
+					document.getElementById('d1').style.visibility = "visible";
+					document.getElementById('d2').style.visibility = "visible";
+					document.getElementById('d3').style.visibility = "visible";
+					document.getElementById('d4').style.visibility = "visible";
+					document.getElementById('d5').style.visibility = "visible";
+
+				}
+			</script><form name="frmMain" method="post" action=""><table border="0" cellpadding="0" cellspacing="0" width="360"><tr><td colspan="2" align="center"><div id="s1" style="visibility:hidden"><font size="4"><i><b>Placer County Assessor</b></i></font></div></td></tr><tr><td>Information as of Lien Date</td><td align="right">January 1st 2013</td></tr><tr><td colspan="2" class="Title"><div id="d1">Navigation</div></td></tr><tr><td><div id="d2"><a href="Inquiry.aspx?CN=Placer&amp;Dept=Asr&amp;Site=Public&amp;PG=Search">New Search</a></div></td><td align="right"><div id="d3"><a href="Javascript:PrintMe()">Print</a></div></td></tr><tr><td colspan="2" align="center"><a class="camera" href="Inquiry.aspx?CN=Placer&amp;SITE=Public&amp;DEPT=Asr&amp;PG=ImageViewer&amp;ImageType=Maps&amp;Screen=As0100&amp;Asmt=093-380-008-000" target="_blank"><img src="../Shasta/WebInquiry/Images/camera.gif" alt="camera" style="height: 30px; border: none;vertical-align: middle" />
+														View Maps
+								</a></td></tr><tr><td colspan="2" class="Title">Property Information</td></tr><tr><td>Assessor ID Number</td><td class="c2">093-380-008-000</td></tr><tr class="RowAlt"><td>Tax Rate Area (TRA)</td><td class="c2">091-008</td></tr><tr><td>Last Recording Date</td><td class="c2">01/09/2013</td></tr><tr class="RowAlt"><td>Assessee</td><td class="c2">SCHOENBERGER RICHARD   TR ET AL</td></tr><tr><td>Property Type</td><td class="c2">SINGLE FAM RES, HALF PLEX</td></tr><tr class="RowAlt"><td>Acres</td><td class="c2">0</td></tr><tr><td>Asmt Description</td><td class="c2">L 559 DOLLAR PT #9</td></tr><tr class="RowAlt"><td>Asmt Status</td><td class="c2">ACTIVE</td></tr><tr><td class="Title" colspan="2">Roll Values</td></tr><tr><td>Land</td><td class="c2">1,300,000</td></tr><tr class="RowAlt"><td>Structure</td><td class="c2">1,393,750</td></tr><tr><td>Fixtures</td><td class="c2"></td></tr><tr class="RowAlt"><td>Growing</td><td class="c2"></td></tr><tr><td>Total Land and Improvements</td><td class="c2">2,693,750</td></tr><tr class="RowAlt"><td>Manufactured Home</td><td class="c2"></td></tr><tr><td>Personal Property</td><td class="c2"></td></tr><tr class="RowAlt"><td>Homeowners Exemption</td><td class="c2"></td></tr><tr><td>Other Exemption</td><td class="c2"></td></tr><tr class="RowAlt"><td>Net Assessment</td><td class="c2">2,693,750</td></tr><tr><td class="Title" colspan="2">Ownership</td></tr><tr class=""><td>SCHOENBERGER FAMILY TRUST                 </td><td class="c2">100.000000%</td></tr><tr class="RowAlt"><td>SCHOENBERGER RICHARD                      </td><td class="c2">0.000000%</td></tr><tr class=""><td>SCHOENBERGER MONICA                       </td><td class="c2">0.000000%</td></tr><tr><td class="Title" colspan="2">Building Description(s)</td></tr><tr bgcolor="#E5C7C2"><td>Building Seq. Number</td><td class="c2">1</td></tr><tr class="RowAlt"><td>Building Code</td><td class="c2">1</td></tr><tr><td>Number Of Units</td><td class="c2">1</td></tr><tr class="RowAlt"><td>Building Square Footage</td><td class="c2">4234</td></tr><tr><td>Garage Square Footage</td><td class="c2">572</td></tr><tr><td>Unfinished Square Footage</td><td class="c2">0</td></tr><tr class="RowAlt"><td>Year Built</td><td class="c2">1988</td></tr><tr><td>Bedrooms</td><td class="c2">5</td></tr><tr class="RowAlt"><td>Full Baths</td><td class="c2">4</td></tr><tr><td>Half Baths</td><td class="c2"></td></tr><tr class="RowAlt"><td>Fireplaces</td><td class="c2">1</td></tr><tr><td>Pools</td><td class="c2"></td></tr><tr><td colspan="2" class="Title"><div id="d4">Navigation</div></td></tr><tr><td colspan="2"><div id="d5"><a href="Inquiry.aspx?CN=Placer&amp;Dept=Asr&amp;Site=Public&amp;PG=Search">New Search</a></div></td></tr></table></form></body></html>
+
+
