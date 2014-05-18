@@ -22,7 +22,10 @@ function main(utils, parcelData, fs){
         //   loadPlugins: false
       },
       logLevel: "debug",
-      verbose: true
+      verbose: true,
+      onError: function(){
+        this.exit();
+      }
     });
 
     ctrl.file = 'placer-data.json';
@@ -102,8 +105,15 @@ function main(utils, parcelData, fs){
         }
         return data;
       });
-      utils.dump(tableData);
-      ctrl.json[index] = merge(tableData, ctrl.json[index]);
+      if("Aircraft Tail #" in tableData){
+        // start over
+        ctrl.json[index] = merge({"Assessor ID Number": "Not Found"}, ctrl.json[index]);
+        fs.write(ctrl.file, JSON.stringify(ctrl.json), 'w');
+        casper.bypass(1);
+      }else{
+        utils.dump(tableData);
+        ctrl.json[index] = merge(tableData, ctrl.json[index]);
+      }
     });
     casper.wait(1000);
     casper.then(function() {
