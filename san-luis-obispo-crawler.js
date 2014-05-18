@@ -35,7 +35,7 @@ function main(utils, parcelData, fs){
     casper.start(ctrl.url);
     casper.userAgent('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)');
     ctrl.json.forEach(function(plot, index){
-      if(" Assessed Value: " in plot){
+      if("Assessed Value:" in plot){
         utils.dump('skipping already processed plot');
       }else if("id" in plot){
         if(plot.id.indexOf('-') === -1){
@@ -73,15 +73,15 @@ function main(utils, parcelData, fs){
         var data = {};
         $('#Main_tblPropertyInfo1 tr').each(function(){
           var $this = $(this);
-          key = $this.find('.prompt').text().replace(/\s+/g, ' ');
-          value = $this.find('.response').text().replace(/\s+/g, ' ');
+          key = $this.find('.prompt').text().replace(/\s+/g, ' ').trim();
+          value = $this.find('.response').text().replace(/\s+/g, ' ').trim();
           data[key] = value;
         });
 
         $('#Main_tblPropertyInfo2 tr').each(function(){
           var $this = $(this);
-          key = $this.find('.prompt').text().replace(/\s+/g, ' ');
-          value = $this.find('.response').text().replace(/\s+/g, ' ');
+          key = $this.find('.prompt').text().replace(/\s+/g, ' ').trim();
+          value = $this.find('.response').text().replace(/\s+/g, ' ').trim();
           data[key] = value;
         });
 
