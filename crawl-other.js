@@ -1,6 +1,6 @@
 var utils = require('utils');
 var fs = require('fs');
-var parcelData = fs.read('data.json');
+var parcelData = fs.read('other-data.json');
 parcelData = JSON.parse(parcelData);
 
 utils.dump("Processing " + parcelData.length + " parcels");
@@ -25,28 +25,18 @@ function main(utils, parcelData, fs){
       verbose: true
     });
 
-    ctrl.url = 'http://www.placer.ca.gov/Departments/Assessor/Assessment%20Inquiry.aspx';
+    ctrl.url = 'http://assessor.slocounty.ca.gov/pisa/Search.aspx';
     ctrl.json = parcelData;
     processData();
   }
 
   function processData(){
     casper.start(ctrl.url);
-    casper.then(function() {
-      this.evaluate(function() {
-        window.location = document.querySelector('iframe').src;
-      });
-    });
     ctrl.json.forEach(function(plot, index){
-      if("Assessor ID Number" in plot){
-        utils.dump('skipping already processed plot');
-      }else if("id" in plot){
-        processPlot(plot, index);
-      }
+      processPlot(plot, index);
     });
     casper.run(function() {
-      var that = this;
-      fs.write('data.json', JSON.stringify(ctrl.json), 'w');
+      fs.write('other-data.json', JSON.stringify(ctrl.json), 'w');
       this.exit();
     });
   }
@@ -54,26 +44,16 @@ function main(utils, parcelData, fs){
   function processPlot(plot, index){
     casper.wait(1000);
     casper.then(function() {
-      // this.capture('step1.png');
-      utils.dump("Processing " + plot.id);
-      utils.dump("Filling out form");
-      this.evaluate(function(id) {
-        document.querySelector('input[name="idfeeparcel"]').value = id;
-        SubmitForm();
-      }, plot.id);
+      this.evaluate(function(plot) {
+        var parts = plot.id.split('-');
+        $('form table:nth-of-type(4)').find('td:nth-of-type(2) input:nth-of-type(1)').val();
+        $('form table:nth-of-type(4)').find('td:nth-of-type(2) input:nth-of-type(2)').val();
+        $('form table:nth-of-type(4)').find('td:nth-of-type(2) input:nth-of-type(3)').val();
+      }, plot);
     });
     casper.wait(1000);
     casper.then(function() {
-      // this.capture('step2.png');
-      utils.dump("Following results");
-      this.evaluate(function() {
-        window.location = document.querySelector('tr.data > td a').href;
-      });
-    });
-    casper.wait(1000);
-    casper.then(function() {
-      // this.capture('step3.png');
-      utils.dump("Evaluating results");
+      casper.page.injectJs('/bower_components/jquery/index.js');
       var tableData = this.evaluate(function() {
         var data = {};
         var owners = [];
@@ -106,7 +86,6 @@ function main(utils, parcelData, fs){
     });
     casper.wait(1000);
     casper.then(function() {
-      // this.capture('step4.png');
       fs.write('data.json', JSON.stringify(ctrl.json), 'w');
       this.evaluate(function() {
         window.location = document.querySelector('a').href;
@@ -121,9 +100,9 @@ function main(utils, parcelData, fs){
  * @param obj2
  * @returns obj3 a new object based on obj1 and obj2
  */
-function merge(obj1,obj2){
-  var obj3 = {};
-  for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
-  for (var attrname2 in obj2) { obj3[attrname2] = obj2[attrname2]; }
-  return obj3;
+ function merge(obj1,obj2){
+    var obj3 = {};
+    for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
+    for (var attrname2 in obj2) { obj3[attrname2] = obj2[attrname2]; }
+    return obj3;
 }
