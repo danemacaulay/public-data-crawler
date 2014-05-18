@@ -1,5 +1,6 @@
 node_modules
 bower_components
 data.json
+other-data.json
 parcels.json
 parcels.csv

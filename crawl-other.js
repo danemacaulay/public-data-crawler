@@ -60,13 +60,7 @@ function main(utils, parcelData, fs){
 
     casper.wait(1000);
     casper.thenEvaluate(function() {
-      // document.querySelectorAll('a')[13].click();
-      // $('#Main_gvSearchResults tr:nth-of-type(2) td a').click();
       window.location = $('#Main_gvSearchResults tr:nth-of-type(2) td a').attr('href');
-    });
-    casper.then(function() {
-      this.capture('other-step1.png');
-      require('utils').dump(this.getElementInfo('#Main_gvSearchResults tr:nth-of-type(2) td a'));
     });
 
     casper.wait(1000);
@@ -91,14 +85,16 @@ function main(utils, parcelData, fs){
       });
       utils.dump(tableData);
       ctrl.json[index] = merge(tableData, ctrl.json[index]);
-      this.capture('other-step2.png');
+    });
+
+    casper.wait(1000);
+    casper.thenEvaluate(function() {
+      window.location = $('#Main_lnkBackToSearch').attr('href');
     });
 
     casper.wait(1000);
     casper.then(function() {
-      this.capture('other-step3.png');
       fs.write(ctrl.file, JSON.stringify(ctrl.json), 'w');
-      this.click('#Main_lnkBackToSearch');
     });
   }
 }
