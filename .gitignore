@@ -1,6 +1,8 @@
 node_modules
 bower_components
 data.json
-other-data.json
-parcels.json
-parcels.csv
+san-luis-obispo-data.json
+san-luis-obispo-data.csv
+placer-data.json
+placer-parcels.json
+placer-parcels.csv
