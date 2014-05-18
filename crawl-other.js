@@ -18,7 +18,7 @@ function main(utils, parcelData, fs){
         'bower_components/jquery/index.js',
       ],
       pageSettings: {
-        loadImages:  false,
+        loadImages:  true,
         //   loadPlugins: false
       },
       logLevel: "debug",
@@ -27,69 +27,78 @@ function main(utils, parcelData, fs){
 
     ctrl.url = 'http://assessor.slocounty.ca.gov/pisa/Search.aspx';
     ctrl.json = parcelData;
+    ctrl.file = 'other-data.json';
     processData();
   }
 
   function processData(){
     casper.start(ctrl.url);
+    casper.userAgent('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)');
     ctrl.json.forEach(function(plot, index){
+      if(plot.id.indexOf('-') === -1){
+        plot.id = [plot.id.slice(0, 3), '-', plot.id.slice(3)].join('');
+        plot.id = [plot.id.slice(0, 7), '-', plot.id.slice(7)].join('');
+      }
       processPlot(plot, index);
     });
     casper.run(function() {
-      fs.write('other-data.json', JSON.stringify(ctrl.json), 'w');
+      fs.write(ctrl.file, JSON.stringify(ctrl.json), 'w');
       this.exit();
     });
   }
 
   function processPlot(plot, index){
     casper.wait(1000);
-    casper.then(function() {
-      this.evaluate(function(plot) {
-        var parts = plot.id.split('-');
-        $('form table:nth-of-type(4)').find('td:nth-of-type(2) input:nth-of-type(1)').val();
-        $('form table:nth-of-type(4)').find('td:nth-of-type(2) input:nth-of-type(2)').val();
-        $('form table:nth-of-type(4)').find('td:nth-of-type(2) input:nth-of-type(3)').val();
-      }, plot);
+    casper.thenEvaluate(function(id) {
+      var parts = id.split('-');
+      $('form table:nth-of-type(4) td:nth-of-type(2) input:nth-of-type(1)').attr('value', parts[0]);
+      $('form table:nth-of-type(4) td:nth-of-type(2) input:nth-of-type(2)').attr('value', parts[1]);
+      $('form table:nth-of-type(4) td:nth-of-type(2) input:nth-of-type(3)').attr('value', parts[2]);
+      document.getElementById('Main_btnAPNSearch').click();
+    }, plot.id);
+
+
+    casper.wait(1000);
+    casper.thenEvaluate(function() {
+      // document.querySelectorAll('a')[13].click();
+      // $('#Main_gvSearchResults tr:nth-of-type(2) td a').click();
+      window.location = $('#Main_gvSearchResults tr:nth-of-type(2) td a').attr('href');
     });
+    casper.then(function() {
+      this.capture('other-step1.png');
+      require('utils').dump(this.getElementInfo('#Main_gvSearchResults tr:nth-of-type(2) td a'));
+    });
+
     casper.wait(1000);
     casper.then(function() {
-      casper.page.injectJs('/bower_components/jquery/index.js');
       var tableData = this.evaluate(function() {
         var data = {};
-        var owners = [];
-        var key, value;
-        var found = false;
-        var $this;
+        $('#Main_tblPropertyInfo1 tr').each(function(){
+          var $this = $(this);
+          key = $this.find('.prompt').text().replace(/\s+/g, ' ');
+          value = $this.find('.response').text().replace(/\s+/g, ' ');
+          data[key] = value;
+        });
 
-        $table = $('table tr');
-        if($table.length > 0){
-          $table.each(function(){
-            $this = $(this);
-            if($this.find('.title').text() == 'Ownership'){
-              found = true;
-            }else if($this.find('.title').text() == 'Building Description(s)'){
-              found = false;
-            }else if(found){
-              owners.push($this.text().replace(/\s+/g, ' '));
-            }else{
-              key = $this.find('td').first().text();
-              value = $this.find('td').filter('.c2').text();
-              data[key] = value;
-            }
-          });
-          data.Ownership = owners.join(', ');
-        }
+        $('#Main_tblPropertyInfo2 tr').each(function(){
+          var $this = $(this);
+          key = $this.find('.prompt').text().replace(/\s+/g, ' ');
+          value = $this.find('.response').text().replace(/\s+/g, ' ');
+          data[key] = value;
+        });
+
         return data;
       });
       utils.dump(tableData);
       ctrl.json[index] = merge(tableData, ctrl.json[index]);
+      this.capture('other-step2.png');
     });
+
     casper.wait(1000);
     casper.then(function() {
-      fs.write('data.json', JSON.stringify(ctrl.json), 'w');
-      this.evaluate(function() {
-        window.location = document.querySelector('a').href;
-      });
+      this.capture('other-step3.png');
+      fs.write(ctrl.file, JSON.stringify(ctrl.json), 'w');
+      this.click('#Main_lnkBackToSearch');
     });
   }
 }
