@@ -4,7 +4,6 @@
   "authors": [
     "Dane Macaulay <dane.macaulay@gmail.com>"
   ],
-  "main": "crawl.js",
   "license": "MIT",
   "ignore": [
     "**/.*",

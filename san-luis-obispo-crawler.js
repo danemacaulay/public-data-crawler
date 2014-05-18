@@ -1,6 +1,6 @@
 var utils = require('utils');
 var fs = require('fs');
-var parcelData = fs.read('other-data.json');
+var parcelData = fs.read('san-luis-obispo-data.json');
 parcelData = JSON.parse(parcelData);
 
 utils.dump("Processing " + parcelData.length + " parcels");
@@ -27,7 +27,7 @@ function main(utils, parcelData, fs){
 
     ctrl.url = 'http://assessor.slocounty.ca.gov/pisa/Search.aspx';
     ctrl.json = parcelData;
-    ctrl.file = 'other-data.json';
+    ctrl.file = 'san-luis-obispo-data.json';
     processData();
   }
 
@@ -35,11 +35,15 @@ function main(utils, parcelData, fs){
     casper.start(ctrl.url);
     casper.userAgent('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)');
     ctrl.json.forEach(function(plot, index){
-      if(plot.id.indexOf('-') === -1){
-        plot.id = [plot.id.slice(0, 3), '-', plot.id.slice(3)].join('');
-        plot.id = [plot.id.slice(0, 7), '-', plot.id.slice(7)].join('');
+      if(" Assessed Value: " in plot){
+        utils.dump('skipping already processed plot');
+      }else if("id" in plot){
+        if(plot.id.indexOf('-') === -1){
+          plot.id = [plot.id.slice(0, 3), '-', plot.id.slice(3)].join('');
+          plot.id = [plot.id.slice(0, 7), '-', plot.id.slice(7)].join('');
+        }
+        processPlot(plot, index);
       }
-      processPlot(plot, index);
     });
     casper.run(function() {
       fs.write(ctrl.file, JSON.stringify(ctrl.json), 'w');

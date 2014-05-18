@@ -1,6 +1,6 @@
 var utils = require('utils');
 var fs = require('fs');
-var parcelData = fs.read('data.json');
+var parcelData = fs.read('placer-data.json');
 parcelData = JSON.parse(parcelData);
 
 utils.dump("Processing " + parcelData.length + " parcels");
@@ -25,6 +25,7 @@ function main(utils, parcelData, fs){
       verbose: true
     });
 
+    ctrl.file = 'placer-data.json';
     ctrl.url = 'http://www.placer.ca.gov/Departments/Assessor/Assessment%20Inquiry.aspx';
     ctrl.json = parcelData;
     processData();
@@ -46,7 +47,7 @@ function main(utils, parcelData, fs){
     });
     casper.run(function() {
       var that = this;
-      fs.write('data.json', JSON.stringify(ctrl.json), 'w');
+      fs.write(ctrl.file, JSON.stringify(ctrl.json), 'w');
       this.exit();
     });
   }
@@ -107,7 +108,7 @@ function main(utils, parcelData, fs){
     casper.wait(1000);
     casper.then(function() {
       // this.capture('step4.png');
-      fs.write('data.json', JSON.stringify(ctrl.json), 'w');
+      fs.write(ctrl.file, JSON.stringify(ctrl.json), 'w');
       this.evaluate(function() {
         window.location = document.querySelector('a').href;
       });
