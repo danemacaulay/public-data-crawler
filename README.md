@@ -4,7 +4,7 @@ public-data-crawler
 Crawl vast oceans of html and assemble csvs.
 
 ###Installation
-Install nodejs, phantomjs and casperjs and install local node dependencies
+Install nodejs, phantomjs and casperjs and then install local node and bower dependencies
 
 ###To crawl [Placer County Assessor](http://www.placer.ca.gov/Departments/Assessor/Assessment%20Inquiry.aspx)
 
