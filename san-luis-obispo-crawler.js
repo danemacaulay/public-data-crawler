@@ -32,11 +32,12 @@ function main(utils, parcelData, fs){
   }
 
   function processData(){
+    var skippedPlots = 0;
     casper.start(ctrl.url);
     casper.userAgent('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)');
     ctrl.json.forEach(function(plot, index){
-      if("Assessed Value:" in plot){
-        utils.dump('skipping already processed plot');
+      if("Assessment Number:" in plot){
+        skippedPlots++;
       }else if("id" in plot){
         if(plot.id.indexOf('-') === -1){
           plot.id = [plot.id.slice(0, 3), '-', plot.id.slice(3)].join('');
@@ -45,6 +46,7 @@ function main(utils, parcelData, fs){
         processPlot(plot, index);
       }
     });
+    utils.dump("Skipping " + skippedPlots + " already processed plots");
     casper.run(function() {
       fs.write(ctrl.file, JSON.stringify(ctrl.json), 'w');
       this.exit();
@@ -53,6 +55,12 @@ function main(utils, parcelData, fs){
 
   function processPlot(plot, index){
     casper.wait(1000);
+
+    casper.then(function() {
+      utils.dump('Filling out form');
+      // this.capture('step1.png');
+    });
+
     casper.thenEvaluate(function(id) {
       var parts = id.split('-');
       $('form table:nth-of-type(4) td:nth-of-type(2) input:nth-of-type(1)').attr('value', parts[0]);
@@ -61,10 +69,29 @@ function main(utils, parcelData, fs){
       document.getElementById('Main_btnAPNSearch').click();
     }, plot.id);
 
+    casper.then(function() {
+      utils.dump('Following results');
+      // this.capture('step2.png');
+    });
 
     casper.wait(1000);
-    casper.thenEvaluate(function() {
-      window.location = $('#Main_gvSearchResults tr:nth-of-type(2) td a').attr('href');
+    casper.then(function(){
+      var results = this.evaluate(function() {
+        return $('#Main_gvSearchResults tr:nth-of-type(2) td a').length;
+      });
+      if(results === 0){
+        ctrl.json[index] = merge({"id": plot.id, "Assessment Number:": "Plot Not found"}, ctrl.json[index]);
+        this.bypass(2);
+      }else{
+        this.evaluate(function(){
+          window.location = $('#Main_gvSearchResults tr:nth-of-type(2) td a').attr('href');
+        });
+      }
+    });
+
+    casper.then(function() {
+      utils.dump('Gathering data');
+      // this.capture('step3.png');
     });
 
     casper.wait(1000);
@@ -91,14 +118,17 @@ function main(utils, parcelData, fs){
       ctrl.json[index] = merge(tableData, ctrl.json[index]);
     });
 
-    casper.wait(1000);
-    casper.thenEvaluate(function() {
-      window.location = $('#Main_lnkBackToSearch').attr('href');
+    casper.then(function() {
+      utils.dump('Saving Data. Returning to search');
+      // this.capture('step4.png');
     });
 
     casper.wait(1000);
     casper.then(function() {
       fs.write(ctrl.file, JSON.stringify(ctrl.json), 'w');
+      this.evaluate(function() {
+        window.location = "http://assessor.slocounty.ca.gov/pisa/Search.aspx";
+      });
     });
   }
 }

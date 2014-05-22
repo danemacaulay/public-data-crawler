@@ -1,5 +1,5 @@
-var fileIn = process.argv[0];
-var fileOut = process.argv[1];
+var fileIn = process.argv[2];
+var fileOut = process.argv[3];
 
 var json2csv = require('json2csv');
 var fs = require('fs');
