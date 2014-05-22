@@ -24,7 +24,9 @@ function main(utils, parcelData, fs){
       logLevel: "debug",
       verbose: true
     });
-
+    casper.onLoadError = function(){
+      casper.die("Fail.", 1);
+    };
     ctrl.url = 'http://assessor.slocounty.ca.gov/pisa/Search.aspx';
     ctrl.json = parcelData;
     ctrl.file = 'san-luis-obispo-data.json';
